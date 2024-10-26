@@ -9,8 +9,75 @@
     <div>
         Hello, world!
     </div>
+    <div id="container"></div>
 </body>
 <script>
+    const container = document.getElementById("container");
+
+    let boxes = [];
+    let box_num = 0;
+
+    boxes.push({leftX:100, topY:100, rightX:300, bottomY:200, hoge:"hoge"});
+    // boxes.push({leftX:200, topY:200, rightX:500, bottomY:600, hoge:"fuga"});
+
+    function drawRectangle(boxObject) {
+        // 幅と高さを計算
+        const width = Math.abs(boxObject.rightX - boxObject.leftX);
+        const height = Math.abs(boxObject.bottomY - boxObject.topY);
+
+        // div要素を作成してスタイルを設定
+        const rectangle = document.createElement('div');
+        rectangle.style.position = 'absolute';
+        rectangle.style.left = `${boxObject.leftX}px`;
+        rectangle.style.top = `${boxObject.topY}px`;
+        // rectangle.style.width = `${width}px`;
+        // rectangle.style.height = `${height}px`;
+        rectangle.style.border = '1px solid black'; // 枠線を設定
+        rectangle.style.backgroundColor = 'rgba(0, 0, 255, 0.2)'; // 四角形の背景色（透明度を持たせています）
+
+        rectangle.style.padding = "16px";
+        rectangle.textContent = "hoge";
+        rectangle.setAttribute("draggable", "true");
+        rectangle.id = "box" + box_num;
+
+        // ページに追加
+        container.appendChild(rectangle);
+    }
+
+    function containerReset() {
+        container.textContent = "";
+    }
+
+    function getBottomRightPosition(element) {
+        const rect = element.getBoundingClientRect();
+        return {
+            x: rect.right,
+            y: rect.bottom
+        };
+    }
+
+    boxes.forEach(function(value){
+        // console.log(value);
+        drawRectangle(value);
+        box_num++;
+    });
+    // containerReset();
+
+    // 使用例
+    const box0 = document.getElementById("box0");
+    const bottomRightPosition = getBottomRightPosition(box0);
+    console.log(`右下の座標: x=${bottomRightPosition.x}, y=${bottomRightPosition.y}`);
+
+    boxes.push({leftX:bottomRightPosition.x, topY:bottomRightPosition.y, rightX:500, bottomY:600, hoge:"piyo"});
+
+    containerReset();
+
+    boxes.forEach(function(value){
+        // console.log(value);
+        drawRectangle(value);
+        box_num++;
+    });
+
     function hoge() {
         console.log("hoge");
     }
@@ -18,5 +85,6 @@
     for (let i = 0; i<10; i++){
         hoge();
     }
+
 </script>
 </html>
