@@ -17,21 +17,20 @@
     let boxes = [];
     let box_num = 0;
 
-    boxes.push({leftX:100, topY:100, rightX:300, bottomY:200, hoge:"hoge"});
+    const box_start_x = 100;
+    const box_start_y = 200;
+    const box_interval = 32;
+
+    boxes.push({leftX:box_start_x, topY:box_start_y, rightX:300, bottomY:200, hoge:"hoge"});
     // boxes.push({leftX:200, topY:200, rightX:500, bottomY:600, hoge:"fuga"});
 
     function drawRectangle(boxObject) {
-        // 幅と高さを計算
-        const width = Math.abs(boxObject.rightX - boxObject.leftX);
-        const height = Math.abs(boxObject.bottomY - boxObject.topY);
 
         // div要素を作成してスタイルを設定
         const rectangle = document.createElement('div');
         rectangle.style.position = 'absolute';
         rectangle.style.left = `${boxObject.leftX}px`;
         rectangle.style.top = `${boxObject.topY}px`;
-        // rectangle.style.width = `${width}px`;
-        // rectangle.style.height = `${height}px`;
         rectangle.style.border = '1px solid black'; // 枠線を設定
         rectangle.style.backgroundColor = 'rgba(0, 0, 255, 0.2)'; // 四角形の背景色（透明度を持たせています）
 
@@ -56,27 +55,25 @@
         };
     }
 
-    boxes.forEach(function(value){
-        // console.log(value);
-        drawRectangle(value);
+    for (let i = 0; i < boxes.length; i++) {
+        drawRectangle(boxes[i]);
+        const bottomRightPosition = getBottomRightPosition(document.getElementById("box"+box_num));
+        boxes[i].rightX = bottomRightPosition.x;
+        boxes[i].bottomY = bottomRightPosition.y;
+        console.log(boxes[i]);
+        if (box_num<5) {
+            boxes.push({leftX:boxes[i].rightX + box_interval, topY:box_start_y, rightX:300, bottomY:200, hoge:"hoge"});
+        }
         box_num++;
-    });
+    }
+
     // containerReset();
 
+    // boxes.push({leftX:bottomRightPosition.x, topY:bottomRightPosition.y, rightX:500, bottomY:600, hoge:"piyo"});
+
     // 使用例
-    const box0 = document.getElementById("box0");
-    const bottomRightPosition = getBottomRightPosition(box0);
-    console.log(`右下の座標: x=${bottomRightPosition.x}, y=${bottomRightPosition.y}`);
 
-    boxes.push({leftX:bottomRightPosition.x, topY:bottomRightPosition.y, rightX:500, bottomY:600, hoge:"piyo"});
-
-    containerReset();
-
-    boxes.forEach(function(value){
-        // console.log(value);
-        drawRectangle(value);
-        box_num++;
-    });
+    // containerReset();
 
     function hoge() {
         console.log("hoge");
