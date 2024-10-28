@@ -10,7 +10,7 @@
     <!-- <button id="arrow_add_button">add arrow</button> -->
     <div id="box_panel"></div>
     <div id="arrow_panel"></div>
-    <div id="container"></div>
+    <div id="container" style="position: relative;"></div>
 </body>
 <script>
     const box_panel = document.getElementById("box_panel");
@@ -20,8 +20,11 @@
     let boxes = [];
     let box_num = 0;
 
-    const box_start_x = 128;
-    const box_start_y = 128;
+    let arrows = [];
+    let arrow_num = 0;
+
+    const box_start_x = 64;
+    const box_start_y = 64;
     const box_interval = 32;
 
     // boxes.push({leftX:box_start_x, topY:box_start_y, text:"box0"});
@@ -44,7 +47,7 @@
     function displayBoxes() {
 
         box_panel.textContent = "";
-        
+
         boxes.forEach((box, index) => {
             const boxElement = document.createElement("div");
             boxElement.style.marginBottom = "8px";  // 各項目の間に余白を設定
@@ -146,8 +149,9 @@
             }
             drawRectangle(boxes[i]);
             const bottomRightPosition = getBottomRightPosition(document.getElementById("box"+box_num));
-            boxes[i].rightX = bottomRightPosition.x;
-            boxes[i].bottomY = bottomRightPosition.y;
+            const container_xy = container.getBoundingClientRect();
+            boxes[i].rightX = bottomRightPosition.x - container_xy.left;
+            boxes[i].bottomY = bottomRightPosition.y - container_xy.top;
             drawLine(
                 boxes[i].leftX + (boxes[i].rightX - boxes[i].leftX)/2, 
                 boxes[i].bottomY, 
