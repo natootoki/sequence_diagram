@@ -6,23 +6,75 @@
     <title>Document</title>
 </head>
 <body>
-    <div>
-        Hello, world!
-    </div>
+    <button id="box_add_button">add box</button>
+    <!-- <button id="arrow_add_button">add arrow</button> -->
+    <div id="box_panel"></div>
+    <div id="arrow_panel"></div>
     <div id="container"></div>
 </body>
 <script>
+    const box_panel = document.getElementById("box_panel");
+    const arrow_panel = document.getElementById("arrow_panel");
     const container = document.getElementById("container");
 
     let boxes = [];
     let box_num = 0;
 
     const box_start_x = 128;
-    const box_start_y = 256;
+    const box_start_y = 128;
     const box_interval = 32;
 
-    boxes.push({leftX:box_start_x, topY:box_start_y, text:"box0"});
+    // boxes.push({leftX:box_start_x, topY:box_start_y, text:"box0"});
     // boxes.push({leftX:200, topY:200, rightX:500, bottomY:600, hoge:"fuga"});
+
+    // ボタンのクリック時の動作を定義
+    document.getElementById("box_add_button").addEventListener("click", addBox);
+
+    // addBox関数の定義
+    function addBox() {
+        console.log("Box added!");
+        // box_panel.innerHTML += "box" + boxes.length + "<br>";
+        boxes.push({leftX:box_start_x, topY:box_start_y, text:"box" + boxes.length});
+        containerReset();
+        drawDiagram();
+        displayBoxes();
+    }
+
+    // text プロパティを HTML に表示し、更新ボタンを追加する関数
+    function displayBoxes() {
+
+        box_panel.textContent = "";
+        
+        boxes.forEach((box, index) => {
+            const boxElement = document.createElement("div");
+            boxElement.style.marginBottom = "8px";  // 各項目の間に余白を設定
+
+            // text 表示用の要素
+            const textElement = document.createElement("span");
+            textElement.textContent = box.text;
+
+            // 更新用ボタン
+            const updateButton = document.createElement("button");
+            updateButton.textContent = "Update";
+            updateButton.style.marginLeft = "8px";
+
+            // ボタンクリック時に text プロパティを更新
+            updateButton.onclick = () => {
+                const newText = prompt(`Enter new text for Box ${box.id}`, box.text);
+                if (newText !== null) {
+                    boxes[index].text = newText;
+                    containerReset();
+                    drawDiagram();
+                    displayBoxes();  // 表示を更新
+                }
+            };
+
+            // 各要素を container に追加
+            boxElement.appendChild(textElement);
+            boxElement.appendChild(updateButton);
+            box_panel.appendChild(boxElement);
+        });
+    }
 
     function drawRectangle(boxObject) {
 
@@ -63,18 +115,14 @@
         line.style.transformOrigin = "0 0"; // 始点を基準に回転
         line.style.transform = `rotate(${angle}deg)`; // 回転して線を描画
 
-        document.body.appendChild(line);
+        container.appendChild(line);
     }
 
     // 使用例
-    drawLine(box_start_x, box_start_y, box_start_x+64, box_start_y);
-    drawLine(box_start_x, box_start_y, box_start_x-64, box_start_y);
-    drawLine(box_start_x, box_start_y, box_start_x, box_start_y+64);
-    drawLine(box_start_x, box_start_y, box_start_x, box_start_y-64);
-    // drawLine(box_start_x, box_start_y, box_start_x, box_start_y+128);
-    // drawLine(box_start_x, box_start_y, box_start_x, box_start_y-128);
-    // drawLine(box_start_x, box_start_y, box_start_x+128, box_start_y);
-    // drawLine(box_start_x, box_start_y, box_start_x-128, box_start_y);
+    // drawLine(box_start_x, box_start_y, box_start_x+64, box_start_y);
+    // drawLine(box_start_x, box_start_y, box_start_x-64, box_start_y);
+    // drawLine(box_start_x, box_start_y, box_start_x, box_start_y+64);
+    // drawLine(box_start_x, box_start_y, box_start_x, box_start_y-64);
 
     function containerReset() {
         container.textContent = "";
@@ -88,27 +136,27 @@
         };
     }
 
-    box_num = boxes.length;
 
-    for (let i = 0; i < boxes.length; i++) {
-        drawRectangle(boxes[i]);
-        const bottomRightPosition = getBottomRightPosition(document.getElementById("box"+box_num));
-        boxes[i].rightX = bottomRightPosition.x;
-        boxes[i].bottomY = bottomRightPosition.y;
-        // drawLine(boxes[i].rightX, boxes[i].bottomY, boxes[i].rightX, boxes[i].bottomY+128);
-        if (box_num<5) {
-            boxes.push({leftX:boxes[i].rightX + box_interval, topY:box_start_y, rightX:300, bottomY:200, text:"box"+box_num});
+    function drawDiagram() {
+        box_num = 0;
+        for (let i = 0; i < boxes.length; i++) {
+            if (i>0) {
+                boxes[i].leftX = boxes[i-1].rightX + box_interval;
+                console.log(i);
+            }
+            drawRectangle(boxes[i]);
+            const bottomRightPosition = getBottomRightPosition(document.getElementById("box"+box_num));
+            boxes[i].rightX = bottomRightPosition.x;
+            boxes[i].bottomY = bottomRightPosition.y;
+            drawLine(
+                boxes[i].leftX + (boxes[i].rightX - boxes[i].leftX)/2, 
+                boxes[i].bottomY, 
+                boxes[i].leftX + (boxes[i].rightX - boxes[i].leftX)/2, 
+                boxes[i].bottomY+64
+            );
+            box_num++;
         }
-        box_num++;
     }
-
-    // containerReset();
-
-    // boxes.push({leftX:bottomRightPosition.x, topY:bottomRightPosition.y, rightX:500, bottomY:600, hoge:"piyo"});
-
-    // 使用例
-
-    // containerReset();
 
     function hoge() {
         console.log("hoge");
