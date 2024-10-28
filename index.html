@@ -23,9 +23,21 @@
     let arrows = [];
     let arrow_num = 0;
 
+    arrows.push({from:"box0", to:"box2", text:"hoge"});
+
     const box_start_x = 64;
     const box_start_y = 64;
     const box_interval = 32;
+
+    // 特定のキーワードで検索する関数
+    function findIndexesByKeyword(array, keyword) {
+        return array.reduce((indexes, item, index) => {
+            if (item.text === keyword) {
+                indexes.push(index);
+            }
+            return indexes;
+        }, []);
+    }
 
     // boxes.push({leftX:box_start_x, topY:box_start_y, text:"box0"});
     // boxes.push({leftX:200, topY:200, rightX:500, bottomY:600, hoge:"fuga"});
@@ -37,7 +49,7 @@
     function addBox() {
         console.log("Box added!");
         // box_panel.innerHTML += "box" + boxes.length + "<br>";
-        boxes.push({leftX:box_start_x, topY:box_start_y, text:"box" + boxes.length});
+        boxes.push({id:boxes.length, text:"box" + boxes.length});
         containerReset();
         drawDiagram();
         displayBoxes();
@@ -143,6 +155,8 @@
     function drawDiagram() {
         box_num = 0;
         for (let i = 0; i < boxes.length; i++) {
+            boxes[i].leftX = box_start_x;
+            boxes[i].topY = box_start_y;
             if (i>0) {
                 boxes[i].leftX = boxes[i-1].rightX + box_interval;
                 console.log(i);
@@ -153,12 +167,24 @@
             boxes[i].rightX = bottomRightPosition.x - container_xy.left;
             boxes[i].bottomY = bottomRightPosition.y - container_xy.top;
             drawLine(
-                boxes[i].leftX + (boxes[i].rightX - boxes[i].leftX)/2, 
+                (boxes[i].leftX + boxes[i].rightX)/2, 
                 boxes[i].bottomY, 
-                boxes[i].leftX + (boxes[i].rightX - boxes[i].leftX)/2, 
+                (boxes[i].leftX + boxes[i].rightX)/2, 
                 boxes[i].bottomY+64
             );
             box_num++;
+        }
+
+        console.log("hoge" + findIndexesByKeyword(boxes, "box0"));
+
+        for (let i = 0; i < arrows.length; i++) {
+            drawLine(
+                (boxes[findIndexesByKeyword(boxes, arrows[i].from)].leftX + boxes[findIndexesByKeyword(boxes, arrows[i].from)].rightX)/2,
+                128,
+                (boxes[findIndexesByKeyword(boxes, arrows[i].to)].leftX + boxes[findIndexesByKeyword(boxes, arrows[i].to)].rightX)/2,
+                128
+            );
+            
         }
     }
 
