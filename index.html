@@ -17,11 +17,11 @@
     let boxes = [];
     let box_num = 0;
 
-    const box_start_x = 100;
-    const box_start_y = 200;
+    const box_start_x = 128;
+    const box_start_y = 256;
     const box_interval = 32;
 
-    boxes.push({leftX:box_start_x, topY:box_start_y, rightX:300, bottomY:200, hoge:"hoge"});
+    boxes.push({leftX:box_start_x, topY:box_start_y, text:"box0"});
     // boxes.push({leftX:200, topY:200, rightX:500, bottomY:600, hoge:"fuga"});
 
     function drawRectangle(boxObject) {
@@ -31,17 +31,50 @@
         rectangle.style.position = 'absolute';
         rectangle.style.left = `${boxObject.leftX}px`;
         rectangle.style.top = `${boxObject.topY}px`;
-        rectangle.style.border = '1px solid black'; // 枠線を設定
+        rectangle.style.border = '2px solid black'; // 枠線を設定
         rectangle.style.backgroundColor = 'rgba(0, 0, 255, 0.2)'; // 四角形の背景色（透明度を持たせています）
 
         rectangle.style.padding = "16px";
-        rectangle.textContent = "hoge";
+        rectangle.textContent = boxObject.text;
         rectangle.setAttribute("draggable", "true");
         rectangle.id = "box" + box_num;
 
         // ページに追加
         container.appendChild(rectangle);
     }
+
+    function drawLine(x1, y1, x2, y2) {
+        const line = document.createElement("div");
+        line.style.position = "absolute";
+        line.style.backgroundColor = "black";
+        const border = 2;
+        line.style.height = border + "px"; // 線の太さ
+
+        // 始点と終点の座標から長さと角度を計算
+        const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+        const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+
+        console.log(angle);
+
+        // 線の長さと位置を設定
+        line.style.width = `${length}px`;
+        line.style.left = `${x1 + Math.sin(angle)*border/2}px`;
+        line.style.top = `${y1 - Math.cos(angle)*border/2}px`;
+        line.style.transformOrigin = "0 0"; // 始点を基準に回転
+        line.style.transform = `rotate(${angle}deg)`; // 回転して線を描画
+
+        document.body.appendChild(line);
+    }
+
+    // 使用例
+    drawLine(box_start_x, box_start_y, box_start_x+64, box_start_y);
+    drawLine(box_start_x, box_start_y, box_start_x-64, box_start_y);
+    drawLine(box_start_x, box_start_y, box_start_x, box_start_y+64);
+    drawLine(box_start_x, box_start_y, box_start_x, box_start_y-64);
+    // drawLine(box_start_x, box_start_y, box_start_x, box_start_y+128);
+    // drawLine(box_start_x, box_start_y, box_start_x, box_start_y-128);
+    // drawLine(box_start_x, box_start_y, box_start_x+128, box_start_y);
+    // drawLine(box_start_x, box_start_y, box_start_x-128, box_start_y);
 
     function containerReset() {
         container.textContent = "";
@@ -55,14 +88,16 @@
         };
     }
 
+    box_num = boxes.length;
+
     for (let i = 0; i < boxes.length; i++) {
         drawRectangle(boxes[i]);
         const bottomRightPosition = getBottomRightPosition(document.getElementById("box"+box_num));
         boxes[i].rightX = bottomRightPosition.x;
         boxes[i].bottomY = bottomRightPosition.y;
-        console.log(boxes[i]);
+        // drawLine(boxes[i].rightX, boxes[i].bottomY, boxes[i].rightX, boxes[i].bottomY+128);
         if (box_num<5) {
-            boxes.push({leftX:boxes[i].rightX + box_interval, topY:box_start_y, rightX:300, bottomY:200, hoge:"hoge"});
+            boxes.push({leftX:boxes[i].rightX + box_interval, topY:box_start_y, rightX:300, bottomY:200, text:"box"+box_num});
         }
         box_num++;
     }
